@@ -1,0 +1,426 @@
+\documentclass{article}
+
+% basic
+\usepackage{comment}
+\makeatletter
+\@ifclassloaded{revtex4-2}{}{
+	\@ifclassloaded{standalone}{}{
+		\@ifclassloaded{beamer}{}{
+			\usepackage[total={7.5in,10in}]{geometry} % only use geometry outside of RevTeX and TeXit
+		}
+	}
+}
+\makeatother
+\usepackage{microtype}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{titlesec}
+
+% programmability
+\usepackage{xparse}
+\usepackage{xtemplate}
+\usepackage{ifthen}
+\usepackage{xintexpr}
+\usepackage{mathcommand}
+
+% Support for CJK characters
+\ifthenelse{\equal{\meaning\pdftexbanner}{\meaning\someundefinednonsense}}{
+	\ifthenelse{\equal{\meaning\luatexbanner}{\meaning\someundefinednonsense}}{
+		% xelatex
+		\usepackage{xeCJK}
+	}{
+		% lualatex
+	}
+}{
+	% pdflatex
+	\usepackage{CJKutf8}
+	\AddToHook{begindocument/end}{\CJK{UTF8}{gbsn}}
+	\AddToHook{enddocument}{\endCJK}
+}
+
+% fonts
+\usepackage{amsfonts} % for \mathbb, \mathfrak
+\usepackage{mathrsfs} % for \mathscr
+\usepackage{bm}
+\usepackage{upgreek}
+
+\newcommand{\mbb}[1]{\mathbb{#1}}
+\newcommand{\mfk}[1]{\mathfrak{#1}}
+\newcommand{\mrm}[1]{\mathrm{#1}}
+\newcommand{\trm}[1]{\textrm{#1}}
+\newcommand{\mbf}[1]{\mathbf{#1}}
+\newcommand{\tbf}[1]{\textbf{#1}}
+%\newcommand{\mit}[1]{\mathit{#1}}
+\newcommand{\msf}[1]{\mathsf{#1}}
+\newcommand{\mcal}[1]{\mathcal{#1}}
+\newcommand{\mscr}[1]{\mathscr{#1}}
+%\newcommand{\mtt}[1]{\mathtt{#1}}
+\newcommand{\tit}[1]{\textit{#1}}
+\newcommand{\ttt}[1]{\texttt{#1}}
+\newcommand{\bs}[1]{\boldsymbol{#1}}
+
+% basic utilities
+\usepackage{mathtools}
+\usepackage{amsthm}
+\usepackage{verbatim}
+\usepackage{lipsum}
+
+% extensions
+\usepackage{cancel} % \cancel
+\usepackage{tensor} % \tensor, \indices
+\usepackage{fixdif} % \d
+\usepackage[shortlabels]{enumitem} % options to enumerate and itemize environments
+\usepackage{dcolumn} % align numbers by decimal point in tabular
+\usepackage{hyperref} % \url, \href, and add hyperlinks to crossrefs
+\usepackage{scalerel} % \scalerel, \stretchrel, \scaleto, \stretchto
+\usepackage[notquote]{hanging} % \hangpara
+\usepackage{chngcntr} % \counterwithin, \counterwithout
+\usepackage{slashed} % \slashed
+\usepackage{csquotes} % displayquote environment
+\usepackage{xspace} % \xspace
+
+\makeatletter
+\@ifclassloaded{beamer}{
+	% https://tex.stackexchange.com/a/24491
+	\setitemize{label=\usebeamerfont*{itemize item}%
+	\usebeamercolor[fg]{itemize item}
+	\usebeamertemplate{itemize item}}
+}{}
+\makeatother
+
+% beamer style
+\makeatletter
+\@ifclassloaded{beamer}{
+	\usetheme{Boadilla}
+	\usefonttheme{serif}
+	\setbeamertemplate{footline}{% https://tex.stackexchange.com/a/67000
+		\leavevmode%
+		\hbox{%
+			\begin{beamercolorbox}[wd=.2\paperwidth,ht=2.25ex,dp=1ex,center]{author in head/foot}%
+				\usebeamerfont{author in head/foot}\insertshortauthor
+			\end{beamercolorbox}%
+			\begin{beamercolorbox}[wd=.8\paperwidth,ht=2.25ex,dp=1ex,center]{title in head/foot}%
+				\usebeamerfont{title in head/foot}\insertshorttitle\hspace*{3em}
+				\insertframenumber{} / \inserttotalframenumber\hspace*{1ex}
+			\end{beamercolorbox}
+		}%
+		\vskip0pt%
+	}
+}{}
+
+% floats
+\usepackage{listings}
+\lstdefinestyle{mystyle}{
+	basicstyle=\ttfamily\scriptsize,
+	tabsize=2,
+	showspaces=false,
+	showstringspaces=false,
+	extendedchars=true
+}
+\lstset{style=mystyle}
+
+\makeatletter
+\@ifclassloaded{revtex4-2}{
+	% https://tex.stackexchange.com/a/597712
+	\usepackage[caption=false]{subfig}
+	\usepackage{ragged2e}
+	\DeclareCaptionJustification{justified}{\justifying}
+}{
+	\usepackage{caption} % not compatible with RevTeX
+	\usepackage{subfig}
+}
+\makeatother
+
+\usepackage{graphicx} % \includegraphics
+\usepackage{booktabs} % \toprule, \midrule, \bottomrule
+\setlength{\tabcolsep}{12pt}
+
+% fancy tools
+\usepackage[version=4]{mhchem}
+\usepackage{chemfig}
+\usepackage{chemmacros}
+
+\usepackage{physics2}
+\usephysicsmodule[empty={}]{diagmat}
+\usephysicsmodule{doubleprod}
+\usephysicsmodule{xmat}
+
+\usepackage[separate-uncertainty=true,multi-part-units=single]{siunitx}
+\sisetup{range-phrase=--, range-units=single} % use -- for ranges, unit appears only once
+\catcode`\%=12\relax
+\DeclareSIUnit[number-unit-product=]\percent{%}
+\catcode`\%=14\relax % use \percent in \SI{}{}
+\DeclareSIUnit[number-unit-product=\,]\fahrenheit{\SIUnitSymbolDegree F} % \fahrenheit
+
+% symbols
+\usepackage{amssymb}
+\usepackage[nointegrals]{wasysym}
+\usepackage[safe]{tipa}
+
+\usepackage{pifont}
+\newcommand{\cmark}{\text{\ding{51}}}
+\newcommand{\xmark}{\text{\ding{55}}}
+
+\newcommand{\bN}{\mbb{N}}
+\newcommand{\bC}{\mbb{C}}
+\newcommand{\bR}{\mbb{R}}
+\newcommand{\bQ}{\mbb{Q}}
+\newcommand{\bZ}{\mbb{Z}}
+
+\newcommand{\alp}{\alpha}
+\newcommand{\gma}{\gamma}
+\newcommand{\Gma}{\Gamma}
+\newcommand{\dlt}{\delta}
+\newcommand{\Dlt}{\Delta}
+\newcommand{\eps}{\epsilon}
+\newcommand{\veps}{\varepsilon}
+\newcommand{\vphi}{\varphi}
+\newcommand{\tht}{\theta}
+\newcommand{\Tht}{\Theta}
+\newcommand{\kap}{\kappa}
+\newcommand{\lmd}{\lambda}
+\newcommand{\Lmd}{\Lambda}
+\newcommand{\sgm}{\sigma}
+\newcommand{\Sgm}{\Sigma}
+\newcommand{\omg}{\omega}
+\newcommand{\Omg}{\Omega}
+
+\newcommand{\divby}{\divisionsymbol}
+\newcommand{\ceq}{\coloneqq}
+\newcommand{\eqc}{\eqqcolon}
+
+\renewmathcommand{\i}{\mrm{i}}
+\newcommand{\e}{\mrm{e}}
+\newcommand{\st}{\trm{s.t.}}
+
+\NewChemParticle{\muon}{\chemmu}
+\NewChemParticle{\tauon}{\chemtau}
+\NewChemParticle{\eneu}{\chemnu_{\!\!e}}
+\NewChemParticle{\mneu}{\chemnu_{\!\!\chemmu}}
+\NewChemParticle{\tneu}{\chemnu_{\!\!\chemtau}}
+\NewChemParticle{\pion}{\chempi}
+\NewChemParticle{\etaon}{\chemeta}
+
+% for drawing
+\usepackage{tikz-cd}
+\usepackage{circuitikz}
+\usepackage{pgfplots}
+\usepackage{tikz-3dplot}
+%\usepackage{tikz-feynhand}
+
+\usetikzlibrary{intersections}
+\usetikzlibrary{decorations.markings}
+\usetikzlibrary{decorations.pathmorphing}
+\usetikzlibrary{arrows.meta}
+\usetikzlibrary{calc}
+\usetikzlibrary{bending}
+\usetikzlibrary{patterns}
+\usetikzlibrary{positioning}
+\usetikzlibrary{math}
+\usetikzlibrary{pgfplots.units}
+\usetikzlibrary{angles}
+\usetikzlibrary{shapes.geometric}
+\usetikzlibrary{shadings}
+
+\pgfplotsset{
+	compat=newest,
+	ylabel style={rotate=-90},
+	trig format=rad
+}
+% https://tex.stackexchange.com/a/685953
+\makeatletter
+\patchcmd\pgfpatharc{\pgfutil@in@}{%
+	\pgfmathiftrigonometricusesdeg{}{%
+		\pgfmathradians@{\pgf@temp@a}\let\pgf@temp@a\pgfmathresult
+		\pgfmathradians@{\pgf@temp@b}\let\pgf@temp@b\pgfmathresult
+		\def\pgfmath@trig@format@choice{0}
+	}\pgfutil@in@}{}{\PatchFailed}
+\makeatother
+
+% more shortcuts
+\newcommand{\mcl}{\mathclap}
+\newcommand{\mll}{\mathllap}
+\newcommand{\mrl}{\mathrlap}
+\newcommand{\fr}{\frac}
+\newcommand{\dfr}{\dfrac}
+\newcommand{\tfr}{\tfrac}
+\newcommand{\opn}{\operatorname}
+\newcommand{\bhat}[1]{\hat{\bs{\mbf{#1}}}}
+\newcommand{\fs}{\slashed}
+\newcommand{\hatfs}[1]{{\hat{\phantom{#1}}\mathllap{\fs{#1}}}}
+\newcommand{\func}[3]{#1\colon#2\to#3} % \func{f}{A}{B} => f:A->B
+\newcommand{\vfunc}[5]{\func{#1}{#2}{#3},\quad#4\longmapsto#5} % \vfunc{f}{A}{B}{a}{b} => f:A->B, a|->b
+\newcommand{\fc}[2]{#1\mathchoice{\!}{\!}{}{}\p{#2}} % \fc{f}{x} => f(x)
+\newcommand{\bfc}[2]{#1\mathchoice{\!}{\!}{}{}\b{#2}} % \bfc{f}{x} => f[x]
+\newcommand{\Bfc}[2]{#1\mathchoice{\!}{\!}{}{}\B{#2}} % \bfc{f}{x} => f{x}
+\newcommand{\opc}[2]{\fc{\opn{#1}}{#2}} % \opc{sgn}{x} => sgn(x)
+\newcommand{\bopc}[2]{\bfc{\opn{#1}}{#2}} % \bopc{sgn}{x} => sgn[x]
+\newcommand{\Bopc}[2]{\Bfc{\opn{#1}}{#2}} % \bopc{sgn}{x} => sgn{x}
+\newcommand{\set}[2]{\left\{#1\;\middle|\;#2\right\}} % \set{x}{S} => {x|S}
+\newcommand{\tp}[3][]{
+	\ifthenelse{\equal{#1}{}}
+	{\fr{\partial#2}{\partial#3}}{\p{\fr{\partial#2}{\partial#3}}_{#1}}
+} % \tp[a]{f}{x} => (df/dx)_a, \tp{f}{x} => df/dx
+\newcommand{\abar}[2]{\left.#1\right|_{#2}} % \abar{f}{a} => f|_a
+\newcommand{\order}[1]{\fc{\mrm{O}}{#1}} % \order{x} => O(x)
+
+% parentheses
+\renewmathcommand\p[1]{\left(#1\right)}
+\newcommand\B[1]{\left\{#1\right\}}
+\newcommand\V[1]{\left\lVert#1\right\rVert}
+\renewmathcommand\b[1]{\left[#1\right]}
+\renewmathcommand\v[1]{\left|#1\right|}
+\renewmathcommand\a[1]{\left\langle#1\right\rangle}
+\newcommand\floor[1]{\left\lfloor#1\right\rfloor}
+\newcommand\ceil[1]{\left\lceil#1\right\rceil}
+\newcommand\round[1]{\left\lfloor#1\right\rceil}
+\newcommand\bra[1]{\left<#1\right|}
+\newcommand\ket[1]{\left|#1\right>}
+\newcommand\braket[2]{\left<#1\middle|#2\right>}
+\newcommand\mel[3]{\left<#1\middle|#2\middle|#3\right>}
+\newcommand\bbra[1]{\left[#1\right|}
+\newcommand\bket[1]{\left|#1\right]}
+\newcommand\bbraket[2]{\left[#1\middle|#2\right]}
+\newcommand\bmel[3]{\left[#1\middle|#2\middle|#3\right]}
+\newcommand\bmela[3]{\left[#1\middle|#2\middle|#3\right>}
+\newcommand\amelb[3]{\left<#1\middle|#2\middle|#3\right]}
+
+% operators
+\DeclareMathOperator{\sech}{sech}
+\DeclareMathOperator{\csch}{csch}
+\DeclareMathOperator{\arsinh}{arsinh}
+\DeclareMathOperator{\arcosh}{arcosh}
+\DeclareMathOperator{\artanh}{artanh}
+\DeclareMathOperator{\arcoth}{arcoth}
+\DeclareMathOperator{\arsech}{arsech}
+\DeclareMathOperator{\arcsch}{arcsch}
+\DeclareMathOperator{\sgn}{sgn}
+\DeclareMathOperator{\nint}{nint}
+\DeclareMathOperator{\PV}{PV}
+\let\Re\relax
+\let\Im\relax
+\DeclareMathOperator{\Re}{Re}
+\DeclareMathOperator{\Im}{Im}
+\DeclareMathOperator{\Tr}{Tr}
+\DeclareMathOperator*{\bigTr}{Tr}
+\DeclareMathOperator*{\bigdet}{det}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\Res}{Res}
+\DeclareMathOperator*{\supp}{supp}
+\letdif\dt{delta}
+\letdif\Dt{Delta}
+
+% Lie groups and others
+\renewmathcommand\O[1]{\fc{\mrm O}{#1}}
+\newcommand\SO[1]{\fc{\mrm{SO}}{#1}}
+\newcommand\U[1]{\fc{\mrm U}{#1}}
+\newcommand\SU[1]{\fc{\mrm{SU}}{#1}}
+\newcommand\GL[1]{\fc{\mrm{GL}}{#1}}
+\newcommand\SL[1]{\fc{\mrm{SL}}{#1}}
+\newcommand\Spin[1]{\fc{\mrm{Spin}}{#1}}
+\newcommand\Pin[1]{\fc{\mrm{Pin}}{#1}}
+\newcommand\Cl[1]{\fc{\mrm{Cl}}{#1}}
+
+\renewmathcommand\o[1]{\fc{\mfk o}{#1}}
+\newcommand\so[1]{\fc{\mfk{so}}{#1}}
+\newcommand\su[1]{\fc{\mfk{su}}{#1}}
+\newcommand\gl[1]{\fc{\mfk{gl}}{#1}}
+\renewmathcommand\sl[1]{\fc{\mfk{sl}}{#1}}
+\newcommand\spin[1]{\fc{\mfk{spin}}{#1}}
+\newcommand\pin[1]{\fc{\mfk{pin}}{#1}}
+
+% theorems
+\makeatletter
+\@ifclassloaded{beamer}{}{
+	\newtheorem{theorem}{Theorem}
+	\newtheorem{proposition}{Theorem}
+	\newtheorem{lemma}[theorem]{Lemma}
+	\newtheorem{corollary}[theorem]{Corollary}\theoremstyle{definition}
+	\newtheorem{definition}[theorem]{Definition}
+}
+\makeatother
+
+% displaystyle matrices
+\makeatletter
+\def\env@dmatrix{
+	\hskip-\arraycolsep
+	\let\@ifnextchar\new@ifnextchar
+	\extrarowheight=2ex
+	\array{*\c@MaxMatrixCols{>{\displaystyle}c}}
+}
+\newenvironment{dmatrix}{\env@dmatrix}{\endarray\hskip-\arraycolsep}
+\newenvironment{pdmatrix}{\left(\env@dmatrix}{\endmatrix\right)}
+\newenvironment{bdmatrix}{\left[\env@dmatrix}{\endmatrix\right]}
+\newenvironment{Bdmatrix}{\left\{\env@dmatrix}{\endmatrix\right\}}
+\newenvironment{vdmatrix}{\left|\env@dmatrix}{\endmatrix\right|}
+\newenvironment{Vdmatrix}{\left\lVert\env@dmatrix}{\endmatrix\right\rVert}
+\makeatother
+
+\usepackage[backend=bibtex]{biblatex}
+\addbibresource{proposal.bib}
+
+\pagenumbering{gobble}
+
+\title{Project description}
+
+\begin{document}
+
+Consider this problem (sometimes called the longest run statistics \cite{makri})
+about a random bit string:
+in a sequence of length $N$ of independent events with the same probability distribution
+on a finite number of possible outcomes,
+what is the probability distribution of the length of the longest substring such that
+all events in the substring are of a specific outcome?
+The broken stick problem is:
+given a stick of length $1$,
+if we break it at $k$ random points, it will be broken into $k+1$ pieces,
+and what is the probability distribution of the length of the longest piece?
+It turns out that the two problems are related:
+the continuum limit of the former problem is the generating function of the answer to the latter problem.
+
+The formal statement of the problem is as follows:
+consider a random bit string of length $N\in\bN$, where each bit is independent and
+has probability $p\in\b{0,1}$ of being $1$.
+Let $\fc{P_{N,S}}p$ be the probability that the length of the longest all-$1$ substring
+of the bit string is $S\in\bN$.
+What is the expression of $\fc{P_{N,S}}p$?
+The recurrence relation is
+\[P_{N,0<S<N}=\p{1-p}\p{p^S\sum_{s=0}^SP_{N-S-1,s}+\sum_{s=0}^{S-1}P_{N-s-1,S}},\]
+with initial conditions
+\[P_{N,0}=\p{1-p}^N,\quad P_{N,N}=p^N,\quad P_{N,S>N}=0.\]
+Then, $P_{N,S}$ is a polynomial of degree $N$ in $p$.
+
+The continuum limit is defined as
+\[\fc f{P,x}\ceq\lim_{N\to\infty}N\fc{P_{N,xN}}{P^{1/N}},\quad P\in\b{0,1},\quad x\ge0,\]
+which is a probability distribution of $x\ceq S/N$ with $P\ceq p^N$ as the parameter.
+Its exact expression is
+\[\fc f{P=0,x}=\fc\dlt x,\quad\fc f{P\in\left(0,1\right],x}=\begin{dcases}
+	0,&x=0,\\\text{complicated},&x\in\p{0,1},\\P\fc\dlt{x-1},&x\ge1.
+\end{dcases}\]
+where
+\begin{align*}
+	\text{complicated}&=-P^x\ln P\p{2+\ln P^{x-1}}
+	+\ln P\sum_{k=2}^{\ceil{1/x}-1}\fr{k\p{-1}^k}{\p{k-2}!}P^{kx}\p{\ln P^{kx-1}}^{k-2}\\
+	&\phantom{=}{}\times\p{1+\fr2{k-1}\ln P^{kx-1}+\fr1{k\p{k-1}}\p{\ln P^{kx-1}}^2}.
+\end{align*}
+
+On the other hand, the continuum limit is also the probability distribution of the longest interval
+without occurrences in the Poisson process on the interval $\b{0,1}$ with rate $-\ln P$.
+When there are $k$ occurrences each at positions $x_1<\cdots<x_k$, it divides the interval into
+$k+1$ intervals:
+\[S_0=x_1,\quad S_1=x_2-x_1,\quad\ldots,\quad S_k=1-x_k.\]
+Order them into $S_{\p0}\le\cdots\le S_{\p k}$.
+The probability distribution of the longest interval is then $\fc f{x,P}$.
+
+If the number $k$ is not Poisson distributed but fixed instead,
+the problem is called the broken stick problem, and the probability distribution of $S_{\p k}$ is \cite{holst}
+\[\fc{f_{k>0}}x=\sum_{j=0}^{k+1}-jk\binom{k+1}j\p{-1}^j\opc{max}{1-jx,0}^{k-1},\quad
+\fc{f_0}x=\fc\dlt{x-1}.\]
+The answers to the two problems are related:
+\[\fc f{x,P}=\sum_{k=0}^\infty\fr{P\p{-\ln P}^k}{k!}\fc{f_k}x.\]
+Therefore, we can see that $\fc f{x,P}/P$ as a function of $-\ln P$
+is the exponential generating function of $\fc{f_k}x$.
+
+\printbibliography[heading=none]
+
+\end{document}
